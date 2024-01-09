@@ -1,42 +1,41 @@
-import { Component } from "react";
+import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Searchbar from "components/searchbar/Searchbar";
 import ImageGallery from "components/image-gallery/ImageGallery";
 import Button from "components/button/Button";
 
-class App extends Component {
-  state = {
-    imageName: '',
-    page: 1,
-    totalHits: 0,
-    images: []
+const App = () => {
+
+  const [imageName, setImageName] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalHits, setTotalHits] = useState(0);
+  const [images, setImages] = useState([])
+
+  const handleFormSubmit = imageName => {
+    setImageName(imageName);
+    setPage(1)
+    setTotalHits(0)
   }
 
-  handleFormSubmit = imageName => {
-    this.setState({ imageName, page: 1, totalHits: 0 });
+  const handleButtonMore = () => {
+    setPage(prevPage => prevPage + 1)
   }
 
-  handleButtonMore = () => {
-    this.setState(prevState => ({page: prevState.page + 1}))
+  const handleImagesData = (hits, totalHits) => {
+    setImages(prevImages => [...prevImages, ...hits])
+    setTotalHits(totalHits)
   }
 
-  handleImagesData = (hits, totalHits) => {
-    this.setState(prevState => ({ images: [...prevState.images, ...hits], totalHits }))
-  }
-
-  render() {
-    const { images, imageName, page, totalHits } = this.state;
     const hasMore = images.length > 0 && images.length < totalHits;
     return (
       <>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery imageName={imageName} page={page} handleImagesData={this.handleImagesData} />
+        <Searchbar onSubmit={handleFormSubmit} />
+        <ImageGallery imageName={imageName} page={page} handleImagesData={handleImagesData} />
         <ToastContainer autoClose={3000} />
-        {hasMore && <Button handleButtonMore={this.handleButtonMore} />}
+        {hasMore && <Button handleButtonMore={handleButtonMore} />}
       </>
     )
-  }
 }
 
 export default App
